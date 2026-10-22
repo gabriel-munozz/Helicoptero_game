@@ -1,6 +1,7 @@
 package br.mackenzie;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,6 +19,10 @@ public class Main implements ApplicationListener {
 
     private Texture background;
     private Player player;
+
+    private float velocidadeDoCenario = 150f;
+
+    private float deslocamentoDoFundo = 0f;
 
     @Override
     public void create() {
@@ -37,13 +42,19 @@ public class Main implements ApplicationListener {
 
     @Override
     public void render() {
-        ScreenUtils.clear(0f, 0f, 0f, 1f);
+        float delta = Gdx.graphics.getDeltaTime();
 
+        deslocamentoDoFundo = (deslocamentoDoFundo + velocidadeDoCenario * delta) % LARGURA;
+
+        ScreenUtils.clear(0f, 0f, 0f, 1f);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        batch.draw(background, 0, 0, LARGURA, ALTURA);
+
+        batch.draw(background, -deslocamentoDoFundo, 0, LARGURA, ALTURA);
+        batch.draw(background, LARGURA - deslocamentoDoFundo, 0, LARGURA, ALTURA);
+
         player.desenhar(batch);
         batch.end();
     }
