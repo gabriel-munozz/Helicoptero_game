@@ -19,9 +19,9 @@ public class Main implements ApplicationListener {
 
     private Texture background;
     private Player player;
+    private SensorPressao sensor;
 
     private float velocidadeDoCenario = 150f;
-
     private float deslocamentoDoFundo = 0f;
 
     @Override
@@ -32,6 +32,7 @@ public class Main implements ApplicationListener {
 
         background = new Texture("background.png");
         player = new Player();
+        sensor = new SensorSimulado();
     }
 
     @Override
@@ -44,6 +45,8 @@ public class Main implements ApplicationListener {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
 
+        float pressao = sensor.ler(delta);
+        player.atualizar(pressao, delta);
         deslocamentoDoFundo = (deslocamentoDoFundo + velocidadeDoCenario * delta) % LARGURA;
 
         ScreenUtils.clear(0f, 0f, 0f, 1f);
@@ -51,10 +54,8 @@ public class Main implements ApplicationListener {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-
         batch.draw(background, -deslocamentoDoFundo, 0, LARGURA, ALTURA);
         batch.draw(background, LARGURA - deslocamentoDoFundo, 0, LARGURA, ALTURA);
-
         player.desenhar(batch);
         batch.end();
     }
