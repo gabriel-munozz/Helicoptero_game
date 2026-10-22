@@ -1,40 +1,65 @@
 package br.mackenzie;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
+
+    public static final float LARGURA = 800f;
+    public static final float ALTURA = 480f;
+
+    private OrthographicCamera camera;
+    private FitViewport viewport;
+    private SpriteBatch batch;
+
+    private Texture background;
+    private Player player;
+
     @Override
     public void create() {
-        // Prepare your application here.
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(LARGURA, ALTURA, camera);
+        batch = new SpriteBatch();
+
+        background = new Texture("background.png");
+        player = new Player();
     }
 
     @Override
     public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
-        if(width <= 0 || height <= 0) return;
-
-        // Resize your application here. The parameters represent the new window size.
+        if (width <= 0 || height <= 0) return;
+        viewport.update(width, height, true);
     }
 
     @Override
     public void render() {
-        // Draw your application here.
+        ScreenUtils.clear(0f, 0f, 0f, 1f);
+
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
+        batch.begin();
+        batch.draw(background, 0, 0, LARGURA, ALTURA);
+        player.desenhar(batch);
+        batch.end();
     }
 
     @Override
     public void pause() {
-        // Invoked when your application is paused.
     }
 
     @Override
     public void resume() {
-        // Invoked when your application is resumed after pause.
     }
 
     @Override
     public void dispose() {
-        // Destroy application's resources here.
+        batch.dispose();
+        background.dispose();
+        player.dispose();
     }
 }
