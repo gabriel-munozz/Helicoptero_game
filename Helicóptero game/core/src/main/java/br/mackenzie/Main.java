@@ -13,13 +13,18 @@ public class Main implements ApplicationListener {
     public static final float LARGURA = 800f;
     public static final float ALTURA = 480f;
 
+    public static final float ALTURA_DO_CHAO = 74f;
+
     private OrthographicCamera camera;
     private FitViewport viewport;
     private SpriteBatch batch;
 
     private Texture background;
     private Player player;
+    private Vitima vitima;
     private SensorPressao sensor;
+
+    private int resgates = 0;
 
     private float velocidadeDoCenario = 150f;
     private float deslocamentoDoFundo = 0f;
@@ -32,6 +37,7 @@ public class Main implements ApplicationListener {
 
         background = new Texture("background.png");
         player = new Player();
+        vitima = new Vitima();
         sensor = new SensorSimulado();
     }
 
@@ -49,6 +55,13 @@ public class Main implements ApplicationListener {
         player.atualizar(pressao, delta);
         deslocamentoDoFundo = (deslocamentoDoFundo + velocidadeDoCenario * delta) % LARGURA;
 
+        vitima.atualizar(velocidadeDoCenario * delta);
+
+        if (player.getArea().overlaps(vitima.getArea())) {
+            resgates++;
+            vitima.reaparecer();
+        }
+
         ScreenUtils.clear(0f, 0f, 0f, 1f);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -56,6 +69,7 @@ public class Main implements ApplicationListener {
         batch.begin();
         batch.draw(background, -deslocamentoDoFundo, 0, LARGURA, ALTURA);
         batch.draw(background, LARGURA - deslocamentoDoFundo, 0, LARGURA, ALTURA);
+        vitima.desenhar(batch);
         player.desenhar(batch);
         batch.end();
     }
@@ -73,5 +87,6 @@ public class Main implements ApplicationListener {
         batch.dispose();
         background.dispose();
         player.dispose();
+        vitima.dispose();
     }
 }

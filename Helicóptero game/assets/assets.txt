@@ -1,1 +1,3 @@
-.gitkeep
+background.png
+player.png
+vitima.png
