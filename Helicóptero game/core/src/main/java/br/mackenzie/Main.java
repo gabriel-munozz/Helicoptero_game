@@ -1,92 +1,83 @@
 package br.mackenzie;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class Main implements ApplicationListener {
+public class Main extends Game {
 
     public static final float LARGURA = 800f;
     public static final float ALTURA = 480f;
 
     public static final float ALTURA_DO_CHAO = 74f;
 
-    private OrthographicCamera camera;
-    private FitViewport viewport;
-    private SpriteBatch batch;
+    public OrthographicCamera camera;
+    public FitViewport viewport;
+    public SpriteBatch batch;
+    public BitmapFont fonte;
+    public SensorPressao sensor;
 
-    private Texture background;
-    private Player player;
-    private Vitima vitima;
-    private SensorPressao sensor;
-
-    private int resgates = 0;
-
-    private float velocidadeDoCenario = 150f;
-    private float deslocamentoDoFundo = 0f;
+    public Texture background;
+    private Texture pixel;
 
     @Override
     public void create() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(LARGURA, ALTURA, camera);
         batch = new SpriteBatch();
+        fonte = new BitmapFont();
 
         background = new Texture("background.png");
-        player = new Player();
-        vitima = new Vitima();
+
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(Color.WHITE);
+        pm.fill();
+        pixel = new Texture(pm);
+        pm.dispose();
+
         sensor = new SensorSimulado();
+
+        setScreen(new MenuScreen(this));
     }
 
     @Override
     public void resize(int width, int height) {
         if (width <= 0 || height <= 0) return;
         viewport.update(width, height, true);
+        super.resize(width, height);
     }
 
-    @Override
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
-
-        float pressao = sensor.ler(delta);
-        player.atualizar(pressao, delta);
-        deslocamentoDoFundo = (deslocamentoDoFundo + velocidadeDoCenario * delta) % LARGURA;
-
-        vitima.atualizar(velocidadeDoCenario * delta);
-
-        if (player.getArea().overlaps(vitima.getArea())) {
-            resgates++;
-            vitima.reaparecer();
-        }
-
+    public void prepararCamera() {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
-        batch.begin();
-        batch.draw(background, -deslocamentoDoFundo, 0, LARGURA, ALTURA);
-        batch.draw(background, LARGURA - deslocamentoDoFundo, 0, LARGURA, ALTURA);
-        vitima.desenhar(batch);
-        player.desenhar(batch);
-        batch.end();
     }
 
-    @Override
-    public void pause() {
+    public void escurecerTela(float opacidade) {
+        batch.setColor(0f, 0f, 0f, opacidade);
+        batch.draw(pixel, 0, 0, LARGURA, ALTURA);
+        batch.setColor(Color.WHITE);
     }
 
-    @Override
-    public void resume() {
+    public void escreverCentralizado(String texto, float y, float escala) {
+        fonte.getData().setScale(escala);
+        fonte.setColor(Color.WHITE);
+        fonte.draw(batch, texto, 0, y, LARGURA, Align.center, false);
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         batch.dispose();
+        fonte.dispose();
         background.dispose();
-        player.dispose();
-        vitima.dispose();
+        pixel.dispose();
     }
 }

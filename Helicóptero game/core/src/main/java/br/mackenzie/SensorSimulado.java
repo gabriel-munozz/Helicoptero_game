@@ -10,9 +10,6 @@ public class SensorSimulado implements SensorPressao {
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             return 1.0f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            return 0.5f;
-        }
         return 0.0f;
     }
 }
