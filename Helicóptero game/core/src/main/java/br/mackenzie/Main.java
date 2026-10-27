@@ -16,7 +16,7 @@ public class Main extends Game {
     public static final float LARGURA = 800f;
     public static final float ALTURA = 480f;
 
-    public static final float ALTURA_DO_CHAO = 74f;
+    public static final float ALTURA_DO_CHAO = 55f;
 
     public OrthographicCamera camera;
     public FitViewport viewport;
@@ -66,9 +66,19 @@ public class Main extends Game {
         batch.setColor(Color.WHITE);
     }
 
-    public void escreverCentralizado(String texto, float y, float escala) {
+    public void escrever(String texto, float x, float y, float escala, Color cor) {
         fonte.getData().setScale(escala);
-        fonte.setColor(Color.WHITE);
+        fonte.setColor(cor);
+        fonte.draw(batch, texto, x, y);
+    }
+
+    public void escreverCentralizado(String texto, float y, float escala) {
+        escreverCentralizado(texto, y, escala, Color.WHITE);
+    }
+
+    public void escreverCentralizado(String texto, float y, float escala, Color cor) {
+        fonte.getData().setScale(escala);
+        fonte.setColor(cor);
         fonte.draw(batch, texto, 0, y, LARGURA, Align.center, false);
     }
 

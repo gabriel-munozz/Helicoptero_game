@@ -1,3 +1,4 @@
 background.png
 player.png
+predio.png
 vitima.png
