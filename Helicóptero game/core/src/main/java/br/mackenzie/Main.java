@@ -42,7 +42,7 @@ public class Main extends Game {
         pixel = new Texture(pm);
         pm.dispose();
 
-        sensor = new SensorSimulado();
+        sensor = new SensorArduino("COM3");
 
         setScreen(new MenuScreen(this));
     }
@@ -84,6 +84,11 @@ public class Main extends Game {
 
     @Override
     public void dispose() {
+
+        if (sensor instanceof SensorArduino) {
+            ((SensorArduino) sensor).fechar();
+        }
+
         super.dispose();
         batch.dispose();
         fonte.dispose();
