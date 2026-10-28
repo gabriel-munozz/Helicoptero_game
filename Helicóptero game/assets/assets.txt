@@ -1,4 +1,8 @@
+ambiente.mp3
 background.png
+colisao.mp3
+helicoptero.mp3
 player.png
+player1.png
 predio.png
 vitima.png

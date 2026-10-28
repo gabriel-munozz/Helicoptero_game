@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 
 public class Main extends Game {
 
@@ -23,6 +26,10 @@ public class Main extends Game {
     public SpriteBatch batch;
     public BitmapFont fonte;
     public SensorPressao sensor;
+
+    public Music musicaAmbiente;
+    public Music somHelicoptero;
+    public Sound somColisao;
 
     public Texture background;
     private Texture pixel;
@@ -45,6 +52,19 @@ public class Main extends Game {
         sensor = new SensorArduino("COM3");
 
         setScreen(new MenuScreen(this));
+
+        musicaAmbiente = Gdx.audio.newMusic(Gdx.files.internal("ambiente.mp3"));
+
+        musicaAmbiente.setLooping(true);
+        musicaAmbiente.setVolume(0.43f);
+        musicaAmbiente.play();
+
+        somHelicoptero = Gdx.audio.newMusic(Gdx.files.internal("helicoptero.mp3"));
+
+        somHelicoptero.setLooping(true);
+        somHelicoptero.setVolume(0.12f);
+
+        somColisao = Gdx.audio.newSound(Gdx.files.internal("colisao.mp3"));
     }
 
     @Override
@@ -87,6 +107,20 @@ public class Main extends Game {
 
         if (sensor instanceof SensorArduino) {
             ((SensorArduino) sensor).fechar();
+        }
+
+        if (musicaAmbiente != null) {
+            musicaAmbiente.stop();
+            musicaAmbiente.dispose();
+        }
+
+        if (somHelicoptero != null) {
+            somHelicoptero.stop();
+            somHelicoptero.dispose();
+        }
+
+        if (somColisao != null) {
+            somColisao.dispose();
         }
 
         super.dispose();

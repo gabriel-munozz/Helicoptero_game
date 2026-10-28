@@ -33,6 +33,11 @@ public class GameScreen extends ScreenAdapter {
     }
 
     @Override
+    public void show() {
+        game.somHelicoptero.play();
+    }
+
+    @Override
     public void render(float delta) {
         if (tratarTeclas()) return;
 
@@ -53,6 +58,12 @@ public class GameScreen extends ScreenAdapter {
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             pausado = !pausado;
+
+            if (pausado){
+                game.somHelicoptero.pause();
+            } else {
+                game.somHelicoptero.play();
+            }
         }
         return false;
     }
@@ -83,6 +94,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         if (player.getAreaDeColisao().overlaps(obstaculo.getAreaDeColisao())) {
+            game.somColisao.play(0.7f);
             game.setScreen(new GameOverScreen(game, fase));
             return true;
         }
@@ -146,6 +158,7 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void hide() {
+        game.somHelicoptero.stop();
         player.dispose();
         vitima.dispose();
         obstaculo.dispose();
