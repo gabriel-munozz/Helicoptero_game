@@ -1,5 +1,4 @@
 package br.mackenzie;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -34,6 +33,8 @@ public class Main extends Game {
     public Texture background;
     private Texture pixel;
 
+    private static final boolean USAR_ARDUINO = false;
+
     @Override
     public void create() {
         camera = new OrthographicCamera();
@@ -49,7 +50,7 @@ public class Main extends Game {
         pixel = new Texture(pm);
         pm.dispose();
 
-        sensor = new SensorArduino("COM3");
+        sensor = USAR_ARDUINO ? new SensorArduino("COM3") : new SensorSimulado();
 
         setScreen(new MenuScreen(this));
 

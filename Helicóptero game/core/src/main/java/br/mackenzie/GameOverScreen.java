@@ -8,16 +8,18 @@ public class GameOverScreen extends ScreenAdapter {
 
     private final Main game;
     private final Fase fase;
+    private final Partida partida;
 
-    public GameOverScreen(Main game, Fase fase) {
+    public GameOverScreen(Main game, Fase fase, Partida partida) {
         this.game = game;
         this.fase = fase;
+        this.partida = partida;
     }
 
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            game.setScreen(new GameScreen(game, fase));
+            game.setScreen(new GameScreen(game, fase, partida));
             return;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {

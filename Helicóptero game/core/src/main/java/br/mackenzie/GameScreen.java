@@ -6,30 +6,39 @@ import com.badlogic.gdx.graphics.Color;
 
 public class GameScreen extends ScreenAdapter {
 
-    private static final float TEMPO_FASE_CONCLUIDA = 2f;
+    private static final float TEMPO_FASE_CONCLUIDA = 1.2f;
+    private static final boolean PERMITE_TECLADO = true;
 
     private final Main game;
     private final Fase fase;
+    private final Partida partida;
+    private final Metricas metricas;
     private final Player player;
     private final Vitima vitima;
-    private final Obstaculo obstaculo;
+    private final GeradorDeObstaculos obstaculos;
 
     private final float velocidadeDoCenario;
     private float deslocamentoDoFundo = 0f;
 
-    private int resgates = 0;
+    private float tempoDaFase = 0f;
     private boolean pausado = false;
 
     private boolean faseConcluida = false;
     private float tempoFaseConcluida = 0f;
 
     public GameScreen(Main game, Fase fase) {
+        this(game, fase, new Partida());
+    }
+
+    public GameScreen(Main game, Fase fase, Partida partida) {
         this.game = game;
         this.fase = fase;
+        this.partida = partida;
+        this.metricas = new Metricas(fase.nome, fase.velocidadeDoCenario);
         this.velocidadeDoCenario = fase.velocidadeDoCenario;
         this.player = new Player();
-        this.vitima = new Vitima(-10000f);
-        this.obstaculo = new Obstaculo(vitima.getArea().x);
+        this.obstaculos = new GeradorDeObstaculos(fase);
+        this.vitima = new Vitima(obstaculos.getXMinimoParaVitima());
     }
 
     @Override
@@ -53,7 +62,7 @@ public class GameScreen extends ScreenAdapter {
             return true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-            game.setScreen(new GameScreen(game, fase));
+            game.setScreen(new GameScreen(game, fase, partida));
             return true;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -69,7 +78,13 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private boolean atualizar(float delta) {
-        float pressao = game.sensor.ler(delta);
+        float pressaoDoSensor = game.sensor.ler(delta);
+        float pressao = pressaoDoSensor;
+
+        if (PERMITE_TECLADO && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            pressao = 1f;
+        }
+
         player.atualizar(pressao, delta);
 
         deslocamentoDoFundo = (deslocamentoDoFundo + velocidadeDoCenario * delta) % Main.LARGURA;
@@ -77,47 +92,43 @@ public class GameScreen extends ScreenAdapter {
         if (faseConcluida) {
             tempoFaseConcluida -= delta;
             if (tempoFaseConcluida <= 0f) {
-                irParaProximaFase();
+                game.setScreen(new ResumoFaseScreen(game, fase, partida, metricas));
                 return true;
             }
             return false;
         }
 
+        tempoDaFase += delta;
+        metricas.registrarLeitura(pressaoDoSensor);
+
         vitima.atualizar(velocidadeDoCenario * delta);
-        obstaculo.atualizar(velocidadeDoCenario * delta);
+        obstaculos.atualizar(delta, vitima.getArea().x, player.getArea());
 
         if (vitima.saiuDaTela()) {
-            vitima.reaparecer(obstaculo.getArea().x);
-        }
-        if (obstaculo.saiuDaTela()) {
-            obstaculo.reaparecer(vitima.getArea().x);
+            metricas.registrarVitimaPerdida();
+            vitima.reaparecer(obstaculos.getXMinimoParaVitima());
         }
 
-        if (player.getAreaDeColisao().overlaps(obstaculo.getAreaDeColisao())) {
+        if (obstaculos.bateu(player.getAreaDeColisao())) {
             game.somColisao.play(0.7f);
-            game.setScreen(new GameOverScreen(game, fase));
+            game.setScreen(new GameOverScreen(game, fase, partida));
             return true;
         }
 
         if (player.getArea().overlaps(vitima.getArea())) {
-            resgates++;
-            vitima.reaparecer(obstaculo.getArea().x);
+            metricas.registrarResgate();
+            vitima.reaparecer(obstaculos.getXMinimoParaVitima());
 
-            if (resgates >= fase.vitimasParaPassar) {
+            if (metricas.getResgates() >= fase.vitimasParaPassar) {
                 faseConcluida = true;
                 tempoFaseConcluida = TEMPO_FASE_CONCLUIDA;
+
+                metricas.finalizar(tempoDaFase);
+                partida.adicionar(metricas);
+                HistoricoDePartidas.salvar(partida, metricas);
             }
         }
         return false;
-    }
-
-    private void irParaProximaFase() {
-        Fase proxima = fase.getProxima();
-        if (proxima != null) {
-            game.setScreen(new GameScreen(game, proxima));
-        } else {
-            game.setScreen(new FimScreen(game));
-        }
     }
 
     private void desenhar() {
@@ -127,21 +138,17 @@ public class GameScreen extends ScreenAdapter {
         game.batch.draw(game.background, -deslocamentoDoFundo, 0, Main.LARGURA, Main.ALTURA);
         game.batch.draw(game.background, Main.LARGURA - deslocamentoDoFundo, 0, Main.LARGURA, Main.ALTURA);
         if (!faseConcluida) {
-            obstaculo.desenhar(game.batch);
+            obstaculos.desenhar(game.batch);
             vitima.desenhar(game.batch);
         }
         player.desenhar(game.batch);
 
-        game.escrever(fase.nome + "     Resgates: " + resgates + "/" + fase.vitimasParaPassar,
+        game.escrever(fase.nome + "     Resgates: " + metricas.getResgates() + "/" + fase.vitimasParaPassar,
                 15f, Main.ALTURA - 15f, 1.3f, Color.BLACK);
 
         if (faseConcluida) {
             game.escurecerTela(0.45f);
-            game.escreverCentralizado("FASE CONCLUIDA!", 320f, 2.6f, Color.YELLOW);
-            Fase proxima = fase.getProxima();
-            if (proxima != null) {
-                game.escreverCentralizado("Proxima: " + proxima.nome, 250f, 1.5f);
-            }
+            game.escreverCentralizado("FASE CONCLUIDA!", 300f, 2.6f, Color.YELLOW);
         }
 
         if (pausado) {
@@ -161,6 +168,6 @@ public class GameScreen extends ScreenAdapter {
         game.somHelicoptero.stop();
         player.dispose();
         vitima.dispose();
-        obstaculo.dispose();
+        obstaculos.dispose();
     }
 }

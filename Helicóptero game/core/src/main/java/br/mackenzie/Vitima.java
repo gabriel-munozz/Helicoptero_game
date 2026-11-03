@@ -10,16 +10,15 @@ public class Vitima {
 
     private static final float ALTURA = 55f;
     private static final float AJUSTE_Y = 5f;
-    private static final float DISTANCIA_MINIMA_DO_PREDIO = 250f;
 
     private final Texture textura;
     private final Rectangle area = new Rectangle();
 
-    public Vitima(float xParaEvitar) {
+    public Vitima(float xMinimo) {
         textura = criarTextura();
         float largura = ALTURA * textura.getWidth() / textura.getHeight();
         area.set(0f, Main.ALTURA_DO_CHAO + AJUSTE_Y, largura, ALTURA);
-        reaparecer(xParaEvitar);
+        reaparecer(xMinimo);
     }
 
     public void atualizar(float deslocamento) {
@@ -30,13 +29,9 @@ public class Vitima {
         return area.x + area.width < 0f;
     }
 
-    public void reaparecer(float xParaEvitar) {
-        for (int i = 0; i < 20; i++) {
-            area.x = Main.LARGURA + MathUtils.random(100f, 900f);
-            if (Math.abs(area.x - xParaEvitar) >= DISTANCIA_MINIMA_DO_PREDIO) {
-                return;
-            }
-        }
+    public void reaparecer(float xMinimo) {
+        float x = Main.LARGURA + MathUtils.random(100f, 600f);
+        area.x = Math.max(x, xMinimo);
     }
 
     public Rectangle getArea() {
