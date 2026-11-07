@@ -29,11 +29,7 @@ public class FimScreen extends ScreenAdapter {
             return;
         }
 
-        game.prepararCamera();
-        game.batch.begin();
-
-        game.batch.draw(game.background, 0, 0, Main.LARGURA, Main.ALTURA);
-        game.escurecerTela(0.7f);
+        game.desenharFundoEscurecido(0.7f);
 
         game.escreverCentralizado("PARABENS! VOCE COMPLETOU AS FASES", 445f, 2.0f, Color.YELLOW);
 

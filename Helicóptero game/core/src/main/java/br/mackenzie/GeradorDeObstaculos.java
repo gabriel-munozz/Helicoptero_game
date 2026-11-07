@@ -1,5 +1,4 @@
 package br.mackenzie;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -37,7 +36,7 @@ public class GeradorDeObstaculos {
         this.espacoEntreObstaculos = fase.espacoEntreObstaculos;
 
         for (TipoDeObstaculo tipo : tipos) {
-            texturas.put(tipo, criarTextura(tipo));
+            texturas.put(tipo, new Texture(tipo.arquivo));
         }
         sortearProximo();
     }
@@ -142,20 +141,5 @@ public class GeradorDeObstaculos {
     private float larguraDe(TipoDeObstaculo tipo) {
         Texture t = texturas.get(tipo);
         return tipo.altura * t.getWidth() / t.getHeight();
-    }
-
-    private Texture criarTextura(TipoDeObstaculo tipo) {
-        if (Gdx.files.internal(tipo.arquivo).exists()) {
-            return new Texture(tipo.arquivo);
-        }
-
-        int altura = 100;
-        int largura = Math.max(8, Math.round(altura * tipo.proporcaoReserva));
-        Pixmap pm = new Pixmap(largura, altura, Pixmap.Format.RGBA8888);
-        pm.setColor(tipo.corReserva);
-        pm.fill();
-        Texture t = new Texture(pm);
-        pm.dispose();
-        return t;
     }
 }

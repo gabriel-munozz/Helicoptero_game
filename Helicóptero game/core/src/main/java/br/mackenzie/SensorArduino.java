@@ -35,7 +35,8 @@ public class SensorArduino implements SensorPressao {
         for (SerialPort porta : SerialPort.getCommPorts()) {
             String nome = (porta.getDescriptivePortName() + " " + porta.getSystemPortName()).toLowerCase();
 
-            boolean pareceArduino = nome.contains("arduino");
+            boolean pareceArduino = nome.contains("arduino") || nome.contains("ch340") || nome.contains("usb serial")
+                    || nome.contains("usb-serial") || nome.contains("usbserial");
 
             if (pareceArduino) {
                 return porta;

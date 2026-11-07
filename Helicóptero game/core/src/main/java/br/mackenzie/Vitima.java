@@ -1,6 +1,4 @@
 package br.mackenzie;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -15,7 +13,7 @@ public class Vitima {
     private final Rectangle area = new Rectangle();
 
     public Vitima(float xMinimo) {
-        textura = criarTextura();
+        textura = new Texture("vitima.png");
         float largura = ALTURA * textura.getWidth() / textura.getHeight();
         area.set(0f, Main.ALTURA_DO_CHAO + AJUSTE_Y, largura, ALTURA);
         reaparecer(xMinimo);
@@ -44,20 +42,5 @@ public class Vitima {
 
     public void dispose() {
         textura.dispose();
-    }
-
-    private Texture criarTextura() {
-        if (Gdx.files.internal("vitima.png").exists()) {
-            return new Texture("vitima.png");
-        }
-
-        Pixmap pm = new Pixmap(20, 30, Pixmap.Format.RGBA8888);
-        pm.setColor(1f, 0.55f, 0.1f, 1f);
-        pm.fillRectangle(5, 12, 10, 18);
-        pm.setColor(1f, 0.8f, 0.6f, 1f);
-        pm.fillCircle(10, 6, 6);
-        Texture t = new Texture(pm);
-        pm.dispose();
-        return t;
     }
 }

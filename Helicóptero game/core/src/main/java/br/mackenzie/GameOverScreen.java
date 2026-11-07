@@ -27,11 +27,7 @@ public class GameOverScreen extends ScreenAdapter {
             return;
         }
 
-        game.prepararCamera();
-        game.batch.begin();
-
-        game.batch.draw(game.background, 0, 0, Main.LARGURA, Main.ALTURA);
-        game.escurecerTela(0.65f);
+        game.desenharFundoEscurecido(0.65f);
 
         game.escreverCentralizado("GAME OVER", 340f, 3.2f, Color.RED);
         game.escreverCentralizado(fase.nome, 270f, 1.6f);

@@ -6,11 +6,12 @@ import java.util.List;
 
 public class Partida {
 
+    public static final DateTimeFormatter FORMATO_DE_DATA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final String id;
     private final List<Metricas> resultados = new ArrayList<>();
 
     public Partida() {
-        this.id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.id = LocalDateTime.now().format(FORMATO_DE_DATA);
     }
 
     public void adicionar(Metricas metricas) {

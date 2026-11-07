@@ -34,22 +34,22 @@ public class ResumoFaseScreen extends ScreenAdapter {
             return;
         }
 
-        game.prepararCamera();
-        game.batch.begin();
-
-        game.batch.draw(game.background, 0, 0, Main.LARGURA, Main.ALTURA);
-        game.escurecerTela(0.65f);
+        game.desenharFundoEscurecido(0.65f);
 
         game.escreverCentralizado(fase.nome.toUpperCase() + " CONCLUIDA!", 445f, 2.4f, Color.YELLOW);
 
         float y = 385f;
+        float espacoEntreLinhas = 40f;
         int apareceram = metricas.getResgates() + metricas.getVitimasPerdidas();
 
         game.escreverCentralizado(String.format("Tempo da fase: %.1f s", metricas.getTempoDaFase()), y, 1.4f);
+        y -= espacoEntreLinhas;
         game.escreverCentralizado(String.format("Resgates: %d de %d vitimas", metricas.getResgates(), apareceram), y, 1.4f);
-        game.escreverCentralizado(String.format("Velocidade: %.0f/100   (%.1f s por resgate)",
-                metricas.getNotaDeVelocidade(), metricas.getTempoMedioPorResgate()), y, 1.4f);
+        y -= espacoEntreLinhas;
+        game.escreverCentralizado(String.format("Velocidade: %.0f/100   (%.1f s por resgate)", metricas.getNotaDeVelocidade(), metricas.getTempoMedioPorResgate()), y, 1.4f);
+        y -= espacoEntreLinhas;
         game.escreverCentralizado(String.format("Precisao: %.0f/100", metricas.getPrecisao()), y, 1.4f);
+        y -= espacoEntreLinhas;
         game.escreverCentralizado(String.format("Pico de forca: %.0f%%", metricas.getPicoDeForca()), y, 1.4f);
         game.escreverCentralizado(String.format("Pontuacao: %.0f/100", metricas.getPontuacao()), 160f, 2.2f, Color.YELLOW);
 

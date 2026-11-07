@@ -24,15 +24,11 @@ public class MenuScreen extends ScreenAdapter {
             selecionada = (selecionada + 1) % total;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            game.setScreen(new GameScreen(game, Fase.TODAS[selecionada]));
+            game.setScreen(new GameScreen(game, Fase.TODAS[selecionada], new Partida()));
             return;
         }
 
-        game.prepararCamera();
-        game.batch.begin();
-
-        game.batch.draw(game.background, 0, 0, Main.LARGURA, Main.ALTURA);
-        game.escurecerTela(0.5f);
+        game.desenharFundoEscurecido(0.5f);
 
         game.escreverCentralizado("RESGATE DE HELICOPTERO", 420f, 2.4f);
         game.escreverCentralizado("Escolha a fase", 340f, 1.5f);
@@ -48,6 +44,10 @@ public class MenuScreen extends ScreenAdapter {
 
         game.escreverCentralizado("ENTER: jogar", 120f, 1.3f);
         game.escreverCentralizado("Durante o jogo:  P = pausa   R = reinicia   ESC = menu", 60f, 1.2f);
+
+        if (game.avisoDoSensor != null) {
+            game.escreverCentralizado(game.avisoDoSensor, 28f, 1.2f, Color.RED);
+        }
 
         game.batch.end();
     }

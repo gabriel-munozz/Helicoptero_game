@@ -25,10 +25,6 @@ public class GameScreen extends ScreenAdapter {
     private boolean faseConcluida = false;
     private float tempoFaseConcluida = 0f;
 
-    public GameScreen(Main game, Fase fase) {
-        this(game, fase, new Partida());
-    }
-
     public GameScreen(Main game, Fase fase, Partida partida) {
         this.game = game;
         this.fase = fase;

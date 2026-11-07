@@ -2,7 +2,6 @@ package br.mackenzie;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public final class HistoricoDePartidas {
@@ -24,7 +23,7 @@ public final class HistoricoDePartidas {
                 arquivo.writeString(CABECALHO + "\n", false, "UTF-8");
             }
 
-            String agora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String agora = LocalDateTime.now().format(Partida.FORMATO_DE_DATA);
             String linha = String.join(";",
                     agora,
                     partida.getId(),

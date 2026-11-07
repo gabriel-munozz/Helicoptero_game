@@ -33,6 +33,8 @@ public class Main extends Game {
     public Texture background;
     private Texture pixel;
 
+    public String avisoDoSensor = null;
+
     @Override
     public void create() {
         camera = new OrthographicCamera();
@@ -51,6 +53,9 @@ public class Main extends Game {
         SensorArduino arduino = SensorArduino.conectarAutomaticamente();
         if (arduino != null) {
             sensor = arduino;
+        } else {
+            sensor = delta -> 0f;
+            avisoDoSensor = "ATENCAO: Arduino nao encontrado. Conecte-o e abra o jogo de novo.";
         }
 
         setScreen(new MenuScreen(this));
@@ -86,6 +91,13 @@ public class Main extends Game {
         batch.setColor(0f, 0f, 0f, opacidade);
         batch.draw(pixel, 0, 0, LARGURA, ALTURA);
         batch.setColor(Color.WHITE);
+    }
+
+    public void desenharFundoEscurecido(float opacidade) {
+        prepararCamera();
+        batch.begin();
+        batch.draw(background, 0, 0, LARGURA, ALTURA);
+        escurecerTela(opacidade);
     }
 
     public void escrever(String texto, float x, float y, float escala, Color cor) {

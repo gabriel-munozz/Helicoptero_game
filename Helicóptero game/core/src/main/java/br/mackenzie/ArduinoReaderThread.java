@@ -13,10 +13,6 @@ public class ArduinoReaderThread extends Thread {
         setDaemon(true);
     }
 
-    public ArduinoReaderThread(String portName) {
-        this(SerialPort.getCommPort(portName));
-    }
-
     @Override
     public void run() {
 

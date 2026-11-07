@@ -13,7 +13,6 @@ public class Player {
 
     private static final String FRAME_1 = "player1.png";
     private static final String FRAME_2 = "player2.png";
-    private static final String IMAGEM_UNICA = "player.png";
 
     private static final float DURACAO_DO_FRAME = 0.06f;
     private static final float INCLINACAO_MAXIMA = 8f;
@@ -36,16 +35,11 @@ public class Player {
     private final Rectangle colisao = new Rectangle();
 
     public Player() {
-        boolean temDoisFrames = Gdx.files.internal(FRAME_1).exists()
-                && Gdx.files.internal(FRAME_2).exists();
+        textura1 = new Texture(FRAME_1);
+        textura2 = new Texture(FRAME_2);
 
-        textura1 = new Texture(temDoisFrames ? FRAME_1 : IMAGEM_UNICA);
-        textura2 = temDoisFrames ? new Texture(FRAME_2) : null;
-
-        TextureRegion frame1 = new TextureRegion(textura1);
-        TextureRegion frame2 = temDoisFrames ? new TextureRegion(textura2) : frame1;
-
-        animacao = new Animation<TextureRegion>(DURACAO_DO_FRAME, frame1, frame2);
+        animacao = new Animation<TextureRegion>(DURACAO_DO_FRAME,
+                new TextureRegion(textura1), new TextureRegion(textura2));
         animacao.setPlayMode(Animation.PlayMode.LOOP);
 
         altura = LARGURA * textura1.getHeight() / textura1.getWidth();
@@ -100,8 +94,6 @@ public class Player {
 
     public void dispose() {
         textura1.dispose();
-        if (textura2 != null) {
-            textura2.dispose();
-        }
+        textura2.dispose();
     }
 }

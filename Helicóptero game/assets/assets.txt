@@ -4,7 +4,7 @@ colisao.mp3
 guindaste.png
 helicoptero.mp3
 passaro.png
-player.png
+player1.png
 player2.png
 predio.png
 vitima.png
