@@ -21,11 +21,6 @@ public class Partida {
         return resultados;
     }
 
-    public Metricas getAnterior(Metricas atual) {
-        int i = resultados.indexOf(atual);
-        return i > 0 ? resultados.get(i - 1) : null;
-    }
-
     public String getId() {
         return id;
     }

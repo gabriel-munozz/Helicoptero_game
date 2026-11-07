@@ -33,8 +33,6 @@ public class Main extends Game {
     public Texture background;
     private Texture pixel;
 
-    private static final boolean USAR_ARDUINO = false;
-
     @Override
     public void create() {
         camera = new OrthographicCamera();
