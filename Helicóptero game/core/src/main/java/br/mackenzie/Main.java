@@ -50,7 +50,10 @@ public class Main extends Game {
         pixel = new Texture(pm);
         pm.dispose();
 
-        sensor = USAR_ARDUINO ? new SensorArduino("COM3") : new SensorSimulado();
+        SensorArduino arduino = SensorArduino.conectarAutomaticamente();
+        if (arduino != null) {
+            sensor = arduino;
+        }
 
         setScreen(new MenuScreen(this));
 

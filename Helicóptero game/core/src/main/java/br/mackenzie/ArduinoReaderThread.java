@@ -5,17 +5,23 @@ import java.io.InputStream;
 public class ArduinoReaderThread extends Thread {
 
     private volatile String lastData = "0";
-    private SerialPort arduinoPort;
+    private volatile boolean recebeuDados = false;
+    private final SerialPort arduinoPort;
+
+    public ArduinoReaderThread(SerialPort porta) {
+        this.arduinoPort = porta;
+        setDaemon(true);
+    }
 
     public ArduinoReaderThread(String portName) {
-        this.arduinoPort = SerialPort.getCommPort(portName);
+        this(SerialPort.getCommPort(portName));
     }
 
     @Override
     public void run() {
 
         if (!arduinoPort.openPort()) {
-            System.err.println("Erro: Não foi possível abrir a porta serial.");
+            System.err.println("Erro: Nao foi possivel abrir a porta serial.");
             return;
         }
 
@@ -36,6 +42,7 @@ public class ArduinoReaderThread extends Thread {
                     if (character == '\n') {
 
                         lastData = currentLine.toString().trim();
+                        recebeuDados = true;
                         currentLine.setLength(0);
                     }
                 }
@@ -51,13 +58,16 @@ public class ArduinoReaderThread extends Thread {
 
             if (arduinoPort.isOpen()) {
                 arduinoPort.closePort();
-                System.out.println("Porta serial fechada.");
             }
         }
     }
 
     public String getLastData() {
         return lastData;
+    }
+
+    public boolean recebeuDados() {
+        return recebeuDados;
     }
 
     public void stopReading() {

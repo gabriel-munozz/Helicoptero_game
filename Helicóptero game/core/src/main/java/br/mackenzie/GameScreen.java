@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 public class GameScreen extends ScreenAdapter {
 
     private static final float TEMPO_FASE_CONCLUIDA = 1.2f;
-    private static final boolean PERMITE_TECLADO = true;
 
     private final Main game;
     private final Fase fase;
@@ -78,13 +77,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private boolean atualizar(float delta) {
-        float pressaoDoSensor = game.sensor.ler(delta);
-        float pressao = pressaoDoSensor;
-
-        if (PERMITE_TECLADO && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            pressao = 1f;
-        }
-
+        float pressao = game.sensor.ler(delta);
         player.atualizar(pressao, delta);
 
         deslocamentoDoFundo = (deslocamentoDoFundo + velocidadeDoCenario * delta) % Main.LARGURA;
@@ -99,7 +92,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         tempoDaFase += delta;
-        metricas.registrarLeitura(pressaoDoSensor);
+        metricas.registrarLeitura(pressao);
 
         vitima.atualizar(velocidadeDoCenario * delta);
         obstaculos.atualizar(delta, vitima.getArea().x, player.getArea());

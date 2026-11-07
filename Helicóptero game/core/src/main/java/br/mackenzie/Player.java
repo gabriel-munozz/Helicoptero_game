@@ -1,27 +1,54 @@
 package br.mackenzie;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Player {
 
     private static final float LARGURA = 120f;
+
+    private static final String FRAME_1 = "player1.png";
+    private static final String FRAME_2 = "player2.png";
+    private static final String IMAGEM_UNICA = "player.png";
+
+    private static final float DURACAO_DO_FRAME = 0.06f;
+    private static final float INCLINACAO_MAXIMA = 8f;
+    private static final float SUAVIDADE_DA_INCLINACAO = 8f;
+
     private static final float PRESSAO_BAIXA = 0.35f;
     private static final float PRESSAO_ALTA = 0.65f;
 
     private static final float VELOCIDADE_VERTICAL = 200f;
-    private final Texture textura;
+
+    private final Texture textura1;
+    private final Texture textura2;
+    private final Animation<TextureRegion> animacao;
     private final float altura;
     private float x;
     private float y;
+    private float tempoDaAnimacao = 0f;
+    private float inclinacao = 0f;
     private final Rectangle area = new Rectangle();
     private final Rectangle colisao = new Rectangle();
 
     public Player() {
-        textura = new Texture("player.png");
+        boolean temDoisFrames = Gdx.files.internal(FRAME_1).exists()
+                && Gdx.files.internal(FRAME_2).exists();
 
-        altura = LARGURA * textura.getHeight() / textura.getWidth();
+        textura1 = new Texture(temDoisFrames ? FRAME_1 : IMAGEM_UNICA);
+        textura2 = temDoisFrames ? new Texture(FRAME_2) : null;
+
+        TextureRegion frame1 = new TextureRegion(textura1);
+        TextureRegion frame2 = temDoisFrames ? new TextureRegion(textura2) : frame1;
+
+        animacao = new Animation<TextureRegion>(DURACAO_DO_FRAME, frame1, frame2);
+        animacao.setPlayMode(Animation.PlayMode.LOOP);
+
+        altura = LARGURA * textura1.getHeight() / textura1.getWidth();
 
         x = 200f;
         y = (Main.ALTURA - altura) / 2f;
@@ -36,9 +63,21 @@ public class Player {
             velocidade = VELOCIDADE_VERTICAL;
         }
 
+        float yAntes = y;
         y += velocidade * delta;
 
         y = MathUtils.clamp(y, Main.ALTURA_DO_CHAO, Main.ALTURA - altura);
+
+        tempoDaAnimacao += delta;
+
+        float movimento = y - yAntes;
+        float inclinacaoAlvo = 0f;
+        if (movimento > 0f) {
+            inclinacaoAlvo = INCLINACAO_MAXIMA;
+        } else if (movimento < 0f) {
+            inclinacaoAlvo = -INCLINACAO_MAXIMA;
+        }
+        inclinacao += (inclinacaoAlvo - inclinacao) * Math.min(1f, SUAVIDADE_DA_INCLINACAO * delta);
     }
 
     public Rectangle getArea() {
@@ -54,10 +93,15 @@ public class Player {
     }
 
     public void desenhar(SpriteBatch batch) {
-        batch.draw(textura, x, y, LARGURA, altura);
+        TextureRegion frame = animacao.getKeyFrame(tempoDaAnimacao, true);
+
+        batch.draw(frame, x, y, LARGURA / 2f, altura / 2f, LARGURA, altura, 1f, 1f, inclinacao);
     }
 
     public void dispose() {
-        textura.dispose();
+        textura1.dispose();
+        if (textura2 != null) {
+            textura2.dispose();
+        }
     }
 }
