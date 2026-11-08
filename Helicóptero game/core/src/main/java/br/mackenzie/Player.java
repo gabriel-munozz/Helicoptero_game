@@ -1,7 +1,5 @@
 package br.mackenzie;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -11,38 +9,28 @@ public class Player {
 
     private static final float LARGURA = 120f;
 
-    private static final String FRAME_1 = "player1.png";
-    private static final String FRAME_2 = "player2.png";
-
-    private static final float DURACAO_DO_FRAME = 0.06f;
     private static final float INCLINACAO_MAXIMA = 8f;
     private static final float SUAVIDADE_DA_INCLINACAO = 8f;
 
-    private static final float PRESSAO_BAIXA = 0.35f;
-    private static final float PRESSAO_ALTA = 0.65f;
+    private static final float PRESSAO_BAIXA = 0.30f;
+    private static final float PRESSAO_ALTA = 0.80f;
 
     private static final float VELOCIDADE_VERTICAL = 200f;
 
-    private final Texture textura1;
-    private final Texture textura2;
-    private final Animation<TextureRegion> animacao;
+    private final Texture textura;
+    private final TextureRegion imagem;
     private final float altura;
     private float x;
     private float y;
-    private float tempoDaAnimacao = 0f;
     private float inclinacao = 0f;
     private final Rectangle area = new Rectangle();
     private final Rectangle colisao = new Rectangle();
 
     public Player() {
-        textura1 = new Texture(FRAME_1);
-        textura2 = new Texture(FRAME_2);
+        textura = new Texture("player.png");
+        imagem = new TextureRegion(textura);
 
-        animacao = new Animation<TextureRegion>(DURACAO_DO_FRAME,
-                new TextureRegion(textura1), new TextureRegion(textura2));
-        animacao.setPlayMode(Animation.PlayMode.LOOP);
-
-        altura = LARGURA * textura1.getHeight() / textura1.getWidth();
+        altura = LARGURA * textura.getHeight() / textura.getWidth();
 
         x = 200f;
         y = (Main.ALTURA - altura) / 2f;
@@ -61,8 +49,6 @@ public class Player {
         y += velocidade * delta;
 
         y = MathUtils.clamp(y, Main.ALTURA_DO_CHAO + 11f, Main.ALTURA - altura);
-
-        tempoDaAnimacao += delta;
 
         float movimento = y - yAntes;
         float inclinacaoAlvo = 0f;
@@ -87,13 +73,10 @@ public class Player {
     }
 
     public void desenhar(SpriteBatch batch) {
-        TextureRegion frame = animacao.getKeyFrame(tempoDaAnimacao, true);
-
-        batch.draw(frame, x, y, LARGURA / 2f, altura / 2f, LARGURA, altura, 1f, 1f, inclinacao);
+        batch.draw(imagem, x, y, LARGURA / 2f, altura / 2f, LARGURA, altura, 1f, 1f, inclinacao);
     }
 
     public void dispose() {
-        textura1.dispose();
-        textura2.dispose();
+        textura.dispose();
     }
 }
