@@ -60,7 +60,7 @@ public class Player {
         float yAntes = y;
         y += velocidade * delta;
 
-        y = MathUtils.clamp(y, Main.ALTURA_DO_CHAO, Main.ALTURA - altura);
+        y = MathUtils.clamp(y, Main.ALTURA_DO_CHAO + 11f, Main.ALTURA - altura);
 
         tempoDaAnimacao += delta;
 
