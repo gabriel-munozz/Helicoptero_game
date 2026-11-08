@@ -13,7 +13,7 @@ public class Player {
     private static final float SUAVIDADE_DA_INCLINACAO = 8f;
 
     private static final float PRESSAO_BAIXA = 0.30f;
-    private static final float PRESSAO_ALTA = 0.80f;
+    private static final float PRESSAO_ALTA = 0.70f;
 
     private static final float VELOCIDADE_VERTICAL = 200f;
 

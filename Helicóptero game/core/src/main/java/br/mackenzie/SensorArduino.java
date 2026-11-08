@@ -13,38 +13,6 @@ public class SensorArduino implements SensorPressao {
         this.arduinoReader.start();
     }
 
-    public static SensorArduino conectarAutomaticamente() {
-        SerialPort porta = detectarPorta();
-        if (porta == null) {
-            listarPortasNoConsole();
-            return null;
-        }
-
-        SensorArduino sensor = new SensorArduino(porta);
-        if (sensor.aguardarDados(3000)) {
-            System.out.println("Arduino encontrado na porta " + sensor.getNomeDaPorta());
-            return sensor;
-        }
-
-        System.out.println("A porta " + sensor.getNomeDaPorta() + " nao mandou dados.");
-        sensor.fechar();
-        return null;
-    }
-
-    private static SerialPort detectarPorta() {
-        for (SerialPort porta : SerialPort.getCommPorts()) {
-            String nome = (porta.getDescriptivePortName() + " " + porta.getSystemPortName()).toLowerCase();
-
-            boolean pareceArduino = nome.contains("arduino") || nome.contains("ch340") || nome.contains("usb serial")
-                    || nome.contains("usb-serial") || nome.contains("usbserial");
-
-            if (pareceArduino) {
-                return porta;
-            }
-        }
-        return null;
-    }
-
     private static void listarPortasNoConsole() {
         System.out.println("Nenhum Arduino reconhecido. Portas encontradas:");
         for (SerialPort porta : SerialPort.getCommPorts()) {
@@ -70,6 +38,27 @@ public class SensorArduino implements SensorPressao {
             }
         }
         return false;
+    }
+
+    public static SensorArduino conectarAutomaticamente() {
+        for (SerialPort porta : SerialPort.getCommPorts()) {
+            String nome = porta.getDescriptivePortName().toLowerCase();
+            if (nome.contains("bluetooth")) {
+                continue;
+            }
+
+            SensorArduino sensor = new SensorArduino(porta);
+            if (sensor.aguardarDados(3000)) {
+                System.out.println("Arduino encontrado na porta " + sensor.getNomeDaPorta());
+                return sensor;
+            }
+
+            System.out.println("A porta " + sensor.getNomeDaPorta() + " nao mandou dados.");
+            sensor.fechar();
+        }
+
+        listarPortasNoConsole();
+        return null;
     }
 
     @Override

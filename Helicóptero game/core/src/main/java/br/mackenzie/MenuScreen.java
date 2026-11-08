@@ -30,7 +30,7 @@ public class MenuScreen extends ScreenAdapter {
 
         game.desenharFundoEscurecido(0.5f);
 
-        game.escreverCentralizado("RESGATE DE HELICOPTERO", 420f, 2.4f);
+        game.escreverCentralizado("RESCUE FORCE", 420f, 2.4f);
         game.escreverCentralizado("Escolha a fase", 340f, 1.5f);
 
         for (int i = 0; i < total; i++) {
